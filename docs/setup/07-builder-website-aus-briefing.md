@@ -1,6 +1,6 @@
-# Setup-Anleitung: "Builder: Website aus Briefing (OnePage MCP)"
+# Setup: Builder — Website aus Briefing (OnePage MCP)
 
-Für Kollegen, die diesen Workflow bereits in n8n importiert haben. Dieser Workflow ist der aufwändigste der sechs, da er den Onepage-MCP-Server anspricht – eine BETA-Funktion mit eingeschränkter Dokumentation.
+**Voraussetzung:** Workflow bereits in n8n importiert. Dieser Workflow ist der aufwändigste der Reihe, da er den Onepage-MCP-Server anspricht — eine Beta-Funktion mit noch eingeschränkter Dokumentation. Diese Anleitung behandelt ausschließlich Credentials, Endpoint-Konfiguration und OAuth2-Setup — nicht den Workflow-Aufbau selbst.
 
 ## Kurzüberblick
 
@@ -63,7 +63,7 @@ Im importierten Workflow steht im Node **"OnePage MCP"** beim Feld **Endpoint-UR
 
 ## Schritt 5 – Data Table "projects" prüfen
 
-Der Node, der das Briefing lädt, greift auf die Data Table **"projects"** zu (Spalte `consolidated_brief` u. a.). Wie in [[setup-sub-extract-and-store]] beschrieben: nach einem Import in eine andere n8n-Instanz muss diese Tabelle ggf. neu angelegt und im entsprechenden Node neu zugeordnet werden.
+Der Node, der das Briefing lädt, greift auf die Data Table **"projects"** zu (Spalte `consolidated_brief` u. a.). Wie in [05-sub-extract-and-store.md](05-sub-extract-and-store.md) beschrieben: nach einem Import in eine andere n8n-Instanz muss diese Tabelle ggf. neu angelegt und im entsprechenden Node neu zugeordnet werden.
 
 ---
 

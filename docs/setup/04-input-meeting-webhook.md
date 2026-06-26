@@ -1,6 +1,6 @@
-# Setup-Anleitung: "Input: Meeting (Fireflies + Granola)"
+# Setup: Input — Meeting (Fireflies + Granola)
 
-Diese Anleitung ist für Kollegen, die den Workflow **bereits in n8n importiert** haben und jetzt die Nodes konfigurieren/authentifizieren müssen. Es geht nur um die Einrichtung der externen Tools (Fireflies, Granola) und der n8n-Credentials – keine Erklärung des Workflow-Aufbaus selbst.
+**Voraussetzung:** Workflow bereits in n8n importiert. Diese Anleitung behandelt ausschließlich die Einrichtung der externen Tools (Fireflies, Granola) und der n8n-Credentials — nicht den Workflow-Aufbau selbst.
 
 ## Kurzüberblick des Workflows
 

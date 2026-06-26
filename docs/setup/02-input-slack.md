@@ -1,6 +1,6 @@
-# Setup-Anleitung: "Input: Slack"
+# Setup: Input — Slack
 
-Für Kollegen, die diesen Workflow bereits in n8n importiert haben. Geht nur um die Slack-App-Einrichtung.
+**Voraussetzung:** Workflow bereits in n8n importiert. Diese Anleitung behandelt ausschließlich die Slack-App-Einrichtung und die n8n-Credential — nicht den Workflow-Aufbau selbst.
 
 ## Kurzüberblick
 

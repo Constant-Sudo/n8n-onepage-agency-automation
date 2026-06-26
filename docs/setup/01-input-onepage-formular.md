@@ -1,6 +1,6 @@
-# Setup-Anleitung: "Input: Onepage Formular"
+# Setup: Input — Onepage Formular
 
-Für Kollegen, die diesen Workflow bereits in n8n importiert haben. Geht nur um die Verbindung zwischen dem Onepage-CRM-Formular (auf der Website der Agentur bzw. der Kunden-Landingpage) und n8n.
+**Voraussetzung:** Workflow bereits in n8n importiert. Diese Anleitung behandelt ausschließlich die Verbindung zwischen dem Onepage-CRM-Formular und n8n — nicht den Workflow-Aufbau selbst.
 
 ## Kurzüberblick
 

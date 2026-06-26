@@ -1,6 +1,6 @@
-# Setup-Anleitung: "Sub: Webscraper (Deep, agentisch)"
+# Setup: Sub — Webscraper (Deep, agentisch)
 
-Für Kollegen, die diesen Sub-Workflow bereits in n8n importiert haben. Kein eigener Trigger – wird von "Input: Onepage Formular" (und ggf. manuell) per "Execute Workflow" aufgerufen, wenn eine `existing_url` vorhanden ist.
+**Voraussetzung:** Sub-Workflow bereits in n8n importiert. Der Workflow hat keinen eigenen Trigger — er wird von „Input: Onepage Formular" (und optional manuell) per „Execute Workflow" aufgerufen, sobald eine `existing_url` im Projekt vorhanden ist. Diese Anleitung behandelt ausschließlich Credentials und externe Zugänge — nicht den Workflow-Aufbau selbst.
 
 ## Kurzüberblick
 
@@ -48,7 +48,7 @@ Die Nodes **"Download Sitemap XML"**, **"Raw HTML Source Extractor"** und **"Dis
 
 ## Schritt 4 – Data Tables prüfen
 
-Wie in [[setup-sub-extract-and-store]] beschrieben: "projects" und "briefing_items" müssen in der n8n-Instanz existieren und in den Nodes **"Upsert Project"** und **"Insert Briefing Item"** korrekt zugeordnet sein.
+Wie in [05-sub-extract-and-store.md](05-sub-extract-and-store.md) beschrieben: "projects" und "briefing_items" müssen in der n8n-Instanz existieren und in den Nodes **"Upsert Project"** und **"Insert Briefing Item"** korrekt zugeordnet sein.
 
 ---
 

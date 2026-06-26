@@ -1,6 +1,6 @@
-# Setup-Anleitung: "Input: E-Mail"
+# Setup: Input — E-Mail
 
-Für Kollegen, die diesen Workflow bereits in n8n importiert haben. Geht nur um die Gmail-Anbindung.
+**Voraussetzung:** Workflow bereits in n8n importiert. Diese Anleitung behandelt ausschließlich das Label-Setup, die Google Cloud OAuth-Einrichtung und die n8n-Credential — nicht den Workflow-Aufbau selbst.
 
 ## Kurzüberblick
 

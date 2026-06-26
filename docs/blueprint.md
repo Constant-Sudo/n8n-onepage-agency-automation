@@ -1,13 +1,5 @@
 # Blueprint: n8n-Workflows – Multi-Source Agentur-Website-Automation
 
-**Projekt:** Onepage MCP × Adcon — Agentur-Workflow
-**Stand:** 24. Juni 2026
-**Autor:** Constantin Cartellieri
-**Basis:** Projektnotizen & Besprechung vom 16.06.2026
-
----
-
-## 1. Zielbild
 
 Agenturen sammeln Kunden-Briefings über viele Kanäle parallel: ein Onboarding-Meeting (Fireflies/Granola), eine Nachfass-E-Mail, eine Slack-Abstimmung und ein ausgefülltes Onepage-Formular. Diese Daten liegen heute verstreut. Der Workflow führt sie **automatisch zusammen, speichert sie persistent** und erlaubt einem Projektverantwortlichen, **per Knopfdruck** eine fertige Onepage-Website daraus bauen zu lassen.
 

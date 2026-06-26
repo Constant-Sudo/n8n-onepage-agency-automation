@@ -1,6 +1,6 @@
-# Setup-Anleitung: "Sub: extract_and_store"
+# Setup: Sub — extract_and_store
 
-Für Kollegen, die diesen Sub-Workflow bereits in n8n importiert haben. Dieser Workflow hat **keinen eigenen Trigger** – er wird von allen Input-Workflows (Meeting, Slack, E-Mail, Formular, Webscraper) per "Execute Workflow" aufgerufen. Es geht hier nur um die externen Zugänge/Credentials, nicht um den Aufbau selbst.
+**Voraussetzung:** Sub-Workflow bereits in n8n importiert. Der Workflow hat **keinen eigenen Trigger** — er wird von allen Input-Workflows (Meeting, Slack, E-Mail, Formular, Webscraper) per „Execute Workflow" aufgerufen. Diese Anleitung behandelt ausschließlich die externen Zugänge und Credentials — nicht den Workflow-Aufbau selbst.
 
 ## Kurzüberblick
 
