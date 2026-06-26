@@ -1,0 +1,542 @@
+{
+  "name": "Sub: extract_and_store",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "project_id"
+            },
+            {
+              "name": "client_name"
+            },
+            {
+              "name": "contact_email"
+            },
+            {
+              "name": "slack_channel_id"
+            },
+            {
+              "name": "existing_url"
+            },
+            {
+              "name": "source"
+            },
+            {
+              "name": "source_ref"
+            },
+            {
+              "name": "raw_content"
+            }
+          ]
+        }
+      },
+      "id": "9d2d9537-e05e-44dd-9584-d7ec3e598b3a",
+      "name": "Workflow Input",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.raw_content }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"goals\": [\"string\"], \"target_audience\": \"string\", \"tone_of_voice\": \"string\", \"key_messages\": [\"string\"], \"sections_wanted\": [\"string\"], \"brand_colors\": [\"string\"], \"content_blocks\": [{ \"section\": \"string\", \"text\": \"string\" }], \"cta\": \"string\", \"constraints\": [\"string\"], \"confidence\": \"high\" }",
+        "options": {
+          "systemPromptTemplate": "Du bist ein spezialisierter KI-Datenextraktor für eine Digitalagentur. Deine einzige Aufgabe ist es, unstrukturierte Kunden-Briefings, Call-Transkripte oder E-Mail-Verläufe zu analysieren und die Kerninformationen strikt in das vorgegebene JSON-Schema zu übertragen.\n\nBefolge diese strengen Extraktionsregeln:\n\nAbsolute Fakten-Treue (Zero Hallucination): Erfinde, schätze oder ergänze unter keinen Umständen Informationen. Nutze ausschließlich Details, die explizit im Input-Text genannt werden oder direkte Synonyme davon sind.\n\nUmgang mit Leerstellen: Wenn eine Information für ein Feld im Input fehlt, lass das Feld nicht einfach weg, sondern gib strikt null (für Strings) oder eine leere Liste [] (für Arrays) zurück. Verwende niemals Platzhalter-Texte wie \"nicht angegeben\" oder \"N/A\".\n\nPräzision & Fokus: Formuliere die extrahierten Punkte in Arrays (wie goals, key_messages, constraints) prägnant und direkt. Filtere irrelevantes Rauschen und Füllwörter aus dem Briefing heraus.\n\nLogische Strukturierung (content_blocks): Wenn spezifische Textabschnitte oder Seiteninhalte gefordert sind, gliedere diese logisch in das vorgegebene Format mit section (Titel des Abschnitts) und text (Kerninhalt/Forderung für diesen Abschnitt).\n\nConfidence-Bewertung (confidence): Analysiere die Vollständigkeit des Inputs. Setze den Wert auf \"high\", wenn die zentralen Felder (Ziele, Zielgruppe, CTA) eindeutig identifizierbar sind. Nutze \"medium\" bei lückenhaften Briefings und \"low\", wenn der Input extrem vage ist oder kaum verwertbare Anforderungen enthält.\n\nSprache: Behalte die Sprache des Inputs bei oder übersetze die extrahierten Daten ins Deutsche, falls der Input in einer anderen Sprache verfasst ist."
+        }
+      },
+      "id": "79af235c-38be-419c-a025-47c98148b3cd",
+      "name": "Extract Briefing",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "3cbba981-7757-40de-9075-ecc5a86cd31b",
+      "name": "Claude Sonnet (Extract)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        304,
+        336
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "hbHNms2LueAkGaRn",
+          "name": "anthropic-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "project_id",
+              "value": "={{ $(\"Workflow Input\").item.json.project_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "client_name",
+              "value": "={{ $(\"Workflow Input\").item.json.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "contact_email",
+              "value": "={{ $(\"Workflow Input\").item.json.contact_email }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "slack_channel_id",
+              "value": "={{ $(\"Workflow Input\").item.json.slack_channel_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "existing_url",
+              "value": "={{ $(\"Workflow Input\").item.json.existing_url }}",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "source",
+              "value": "={{ $(\"Workflow Input\").item.json.source }}",
+              "type": "string"
+            },
+            {
+              "id": "a7",
+              "name": "source_ref",
+              "value": "={{ $(\"Workflow Input\").item.json.source_ref }}",
+              "type": "string"
+            },
+            {
+              "id": "a8",
+              "name": "raw_content",
+              "value": "={{ $(\"Workflow Input\").item.json.raw_content }}",
+              "type": "string"
+            },
+            {
+              "id": "a9",
+              "name": "extracted_json",
+              "value": "={{ JSON.stringify($json) }}",
+              "type": "string"
+            },
+            {
+              "id": "a10",
+              "name": "item_id",
+              "value": "={{ $execution.id }}-{{ $itemIndex }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "661c458a-90d6-48fb-b278-ef6858332fc2",
+      "name": "Prepare Item",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "WAGQeXQpNbxT25Kj",
+          "cachedResultName": "projects"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "project_id",
+              "keyValue": "={{ $json.output.project_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "project_id": "={{ $json.output.project_id }}",
+            "client_name": "={{ $json.output.client_name }}",
+            "contact_email": "={{ $json.output.contact_email }}",
+            "slack_channel_id": "={{ $json.output.slack_channel_id }}",
+            "existing_url": "={{ $json.output.existing_url }}"
+          },
+          "schema": [
+            {
+              "id": "project_id",
+              "displayName": "project_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "contact_email",
+              "displayName": "contact_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "slack_channel_id",
+              "displayName": "slack_channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "existing_url",
+              "displayName": "existing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f33f6211-0410-45e8-bcfb-58ecfdd005f7",
+      "name": "Upsert Project",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1264,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "VCKyqsAUxqEEnLJV",
+          "cachedResultName": "briefing_items"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "item_id": "={{ $(\"Prepare Item\").item.json.item_id }}",
+            "project_id": "={{ $('Resolve Project').item.json.output.project_id }}",
+            "source": "={{ $(\"Prepare Item\").item.json.source }}",
+            "source_ref": "={{ $(\"Prepare Item\").item.json.source_ref }}",
+            "raw_content": "={{ $(\"Prepare Item\").item.json.raw_content }}",
+            "extracted_json": "={{ $(\"Prepare Item\").item.json.extracted_json }}"
+          },
+          "schema": [
+            {
+              "id": "item_id",
+              "displayName": "item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "project_id",
+              "displayName": "project_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source_ref",
+              "displayName": "source_ref",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "raw_content",
+              "displayName": "raw_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "extracted_json",
+              "displayName": "extracted_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "02fe3cff-2dd1-4fa3-a5ce-58c1b12c7bcb",
+      "name": "Insert Briefing Item",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1488,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eingehendes Briefing\nQuelle: {{ $json.source }}\nRohe project_id: {{ $json.project_id }}\nclient_name: {{ $json.client_name }}\ncontact_email: {{ $json.contact_email }}\nslack_channel_id: {{ $json.slack_channel_id }}\nexisting_url: {{ $json.existing_url }}\n\nLade die bestehenden Projekte und bestimme die korrekte Zuordnung.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist ein praeziser Projekt-Zuordnungs-Agent fuer eine Digitalagentur. Aufgabe: Entscheide, zu welchem Projekt ein eingehendes Briefing gehoert, damit dieselbe Firma / dasselbe Projekt NICHT auf mehrere project_ids aufgeteilt wird.\n\nVorgehen:\n1) Rufe das Tool \"Lookup Projects\" auf, um ALLE bestehenden Projekte zu laden.\n2) Vergleiche das eingehende Briefing mit jedem bestehenden Projekt anhand dieser Signale (stark -> schwach): identische slack_channel_id; gleiche contact_email oder gleiche E-Mail-Domain; gleiche Website-Domain (existing_url); gleicher oder klar erkennbar gleicher Firmen-/Markenname (auch unscharf, z.B. \"TechFlow Solutions\" ~ \"Tech Flow\" ~ Domain techflow...).\n3) Wenn ein bestehendes Projekt eindeutig passt: setze matched=true und project_id = dessen project_id.\n4) Wenn KEIN bestehendes Projekt klar passt: setze matched=false und vergib eine stabile neue project_id in dieser Prioritaet: (a) Slug der Website-Domain falls existing_url vorhanden (z.B. techflowitsolutions-com), (b) Slug des client_name, (c) die eingehende rohe project_id.\n5) Gib zusaetzlich die VOLLSTAENDIGSTEN Werte fuer client_name, contact_email, slack_channel_id und existing_url zurueck: bevorzuge nicht-leere Werte des gematchten Projekts, fuelle Luecken mit den eingehenden Werten. Blanke niemals einen bereits vorhandenen Wert aus - gib in dem Fall den bestehenden Wert zurueck.\n\nSei konservativ: Matche nur bei klarem gemeinsamem Signal. Im Zweifel neues Projekt. Antworte ausschliesslich im vorgegebenen JSON-Schema.",
+          "maxIterations": 8
+        }
+      },
+      "id": "d340d36d-8787-4b27-9b29-47fdd6d1aaed",
+      "name": "Resolve Project",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        864,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-haiku-4-5",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "af5a3e24-b65f-4429-81f8-aad94a42508e",
+      "name": "Claude Haiku (Resolve)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        800,
+        336
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "hbHNms2LueAkGaRn",
+          "name": "anthropic-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "WAGQeXQpNbxT25Kj",
+          "cachedResultName": "projects"
+        },
+        "returnAll": true
+      },
+      "id": "e5f7c53d-69ad-42a5-a9cd-25d3ec24d909",
+      "name": "Lookup Projects",
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1.1,
+      "position": [
+        928,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"project_id\": \"techflow-relaunch-2026\", \"matched\": true, \"client_name\": \"TechFlow Solutions GmbH\", \"contact_email\": \"sarah.berger@techflow-agency.dev\", \"slack_channel_id\": \"C0BCWSP2YPN\", \"existing_url\": \"https://techflowitsolutions.com/\", \"reason\": \"Gleicher Markenname TechFlow ueber alle Quellen\" }"
+      },
+      "id": "cedcfb19-3c5d-4c99-9245-da97a1e7b7d4",
+      "name": "Project Match Schema",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        336
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input": {
+      "main": [
+        [
+          {
+            "node": "Extract Briefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Briefing": {
+      "main": [
+        [
+          {
+            "node": "Prepare Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet (Extract)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract Briefing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Project": {
+      "main": [
+        [
+          {
+            "node": "Insert Briefing Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Item": {
+      "main": [
+        [
+          {
+            "node": "Resolve Project",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Project": {
+      "main": [
+        [
+          {
+            "node": "Upsert Project",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Haiku (Resolve)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Resolve Project",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Projects": {
+      "ai_tool": [
+        [
+          {
+            "node": "Resolve Project",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Project Match Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Resolve Project",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "d1e5dd01-2c05-4a66-ba17-75a84f0a2e08",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "538d4c63d3afcb8d4d6a2c55d2ac6cebf297210295a8bbd65d61cdf4740b6e1d"
+  },
+  "nodeGroups": [],
+  "id": "yJuepJKq7qXTwjNn",
+  "tags": [
+    {
+      "updatedAt": "2026-06-24T08:11:32.916Z",
+      "createdAt": "2026-06-24T08:11:32.916Z",
+      "id": "7g4UsbDivothQFhH",
+      "name": "Onepage"
+    }
+  ]
+}

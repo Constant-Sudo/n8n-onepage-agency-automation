@@ -1,0 +1,20 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+*~
+.idea/
+.vscode/
+
+# Secrets / Credentials — NIEMALS committen
+.env
+.env.*
+*.local
+credentials.json
+*-credentials.json
+secrets/
+
+# Logs / Temp
+*.log
+tmp/
+.tmp/
+

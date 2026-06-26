@@ -1,0 +1,33 @@
+[
+  {
+    "headers": {
+      "content-type": "application/json",
+      "user-agent": "Onepage-Form/1.0"
+    },
+    "body": {
+      "project_id": "techflow-relaunch-2026",
+      "client_name": "TechFlow Solutions GmbH",
+      "company": "TechFlow Solutions GmbH",
+      "name": "Sarah Berger",
+      "contact_email": "sarah.berger@techflow-agency.dev",
+      "email": "sarah.berger@techflow-agency.dev",
+      "existing_url": "https://techflow-agency.dev",
+      "website": "https://techflow-agency.dev",
+      "staging_url": "https://staging.techflow-agency.dev",
+      "phone": "+49 89 12345678",
+      "budget": "25-50k",
+      "deadline": "2026-08-15",
+      "project_type": "Website Relaunch",
+      "tech_stack": "WordPress (Headless), Next.js, Tailwind CSS",
+      "desired_pages": ["Startseite", "Leistungen", "Über uns", "Kontakt", "Blog"],
+      "services": ["Webentwicklung", "SaaS-Entwicklung", "Wartung & Support"],
+      "preferred_cms": "WordPress Headless",
+      "hosting": "Vercel & WP Engine",
+      "language": "de",
+      "newsletter_optin": true,
+      "message": "Wir möchten unseren bestehenden Web-Auftritt komplett relaunchen. Wichtig sind schnelle Ladezeiten (unter 1s), ein Headless-CMS und ein neues Kontaktformular mit Budget-Dropdown. Live-Gang ist für den 15. August 2026 geplant.",
+      "gdpr_consent": true,
+      "submitted_at": "2026-06-24T09:45:33Z"
+    }
+  }
+]

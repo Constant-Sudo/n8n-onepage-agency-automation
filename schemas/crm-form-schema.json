@@ -1,0 +1,143 @@
+{
+  "_hinweis": "Fertiges Payload für den Onepage-MCP-Tool-Call create_crm_form. Sobald ein Site-Slot frei ist: zuerst create_vibe_section (Formular-Section) bauen, dann react_app_id unten eintragen und create_crm_form mit genau diesem 'steps'-Array aufrufen.",
+  "name": "Agentur-Website-Briefing",
+  "react_app_id": "<REACT_APP_ID_DER_FORMULAR_SECTION>",
+  "steps": [
+    {
+      "key": "kontakt",
+      "title": "Kontakt & Unternehmen",
+      "description": "Wer fragt an und wie erreichen wir Sie?",
+      "fields": {
+        "client_name": {
+          "type": "form-input",
+          "title": "Firma / Projektname",
+          "placeholder": "z. B. Musterfirma GmbH",
+          "required": true
+        },
+        "contact_name": {
+          "type": "form-name",
+          "title": "Ansprechpartner:in",
+          "required": true
+        },
+        "contact_email": {
+          "type": "form-email",
+          "title": "E-Mail-Adresse",
+          "placeholder": "name@firma.de",
+          "required": true
+        },
+        "phone": {
+          "type": "form-phone-number",
+          "title": "Telefonnummer",
+          "required": false
+        },
+        "existing_url": {
+          "type": "form-input",
+          "title": "Bestehende Website (falls vorhanden)",
+          "placeholder": "https://",
+          "required": false
+        }
+      }
+    },
+    {
+      "key": "projekt",
+      "title": "Projekt-Eckdaten",
+      "description": "Damit wir Aufwand und Umfang richtig einschätzen können.",
+      "fields": {
+        "project_type": {
+          "type": "form-select",
+          "title": "Art des Projekts",
+          "required": true,
+          "options": ["Neue Website", "Website-Relaunch", "Landingpage", "Onlineshop", "Sonstiges"]
+        },
+        "budget": {
+          "type": "form-select",
+          "title": "Budgetrahmen",
+          "required": false,
+          "options": ["< 5.000 €", "5.000–15.000 €", "15.000–50.000 €", "> 50.000 €", "Noch unklar"]
+        },
+        "deadline": {
+          "type": "form-datepicker",
+          "title": "Gewünschter Live-Termin",
+          "required": false
+        },
+        "desired_pages": {
+          "type": "form-select",
+          "title": "Gewünschte Seiten",
+          "required": false,
+          "options": ["Startseite", "Leistungen/Produkte", "Über uns", "Team", "Referenzen", "Blog", "Kontakt", "Karriere", "Onlineshop"]
+        }
+      }
+    },
+    {
+      "key": "briefing",
+      "title": "Briefing & Markenwelt",
+      "description": "Je mehr wir hier erfahren, desto treffsicherer der erste Entwurf.",
+      "fields": {
+        "goals": {
+          "type": "form-textarea",
+          "title": "Was soll die neue Website erreichen?",
+          "placeholder": "z. B. mehr Anfragen generieren, Marke modernisieren, Produkte verkaufen ...",
+          "required": true
+        },
+        "target_audience": {
+          "type": "form-input",
+          "title": "Zielgruppe",
+          "placeholder": "Wer soll angesprochen werden?",
+          "required": false
+        },
+        "tone_of_voice": {
+          "type": "form-select",
+          "title": "Markenton",
+          "required": false,
+          "options": ["Seriös & professionell", "Freundlich & persönlich", "Verspielt & kreativ", "Luxuriös & exklusiv", "Minimalistisch & klar", "Technisch & sachlich"]
+        },
+        "key_messages": {
+          "type": "form-textarea",
+          "title": "Kernbotschaften / USPs",
+          "placeholder": "Eine Botschaft pro Zeile",
+          "required": false
+        },
+        "brand_colors": {
+          "type": "form-input",
+          "title": "Wunschfarben / Marken-Look",
+          "placeholder": "z. B. #1A73E8, Blau & Weiß, am bestehenden Logo orientiert",
+          "required": false
+        },
+        "cta": {
+          "type": "form-input",
+          "title": "Gewünschte Handlungsaufforderung (CTA)",
+          "placeholder": "z. B. „Jetzt Termin buchen“",
+          "required": false
+        },
+        "constraints": {
+          "type": "form-textarea",
+          "title": "Wichtige Vorgaben / No-Gos",
+          "placeholder": "z. B. muss DSGVO-konform sein, keine Stock-Fotos ...",
+          "required": false
+        }
+      }
+    },
+    {
+      "key": "abschluss",
+      "title": "Abschluss",
+      "description": "Letzter Schritt – dann sind Sie fertig.",
+      "fields": {
+        "attachments": {
+          "type": "form-uploader",
+          "title": "Logo / Markenmaterial hochladen (optional)",
+          "required": false
+        },
+        "newsletter_optin": {
+          "type": "form-checkbox",
+          "title": "Ich möchte den Onepage-Newsletter erhalten",
+          "required": false
+        },
+        "gdpr_consent": {
+          "type": "form-consent",
+          "title": "Ich habe die Datenschutzerklärung gelesen und stimme der Verarbeitung meiner Daten zu.",
+          "required": true
+        }
+      }
+    }
+  ]
+}

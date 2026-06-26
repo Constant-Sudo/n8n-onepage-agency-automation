@@ -1,0 +1,1023 @@
+{
+  "name": "Sub: Webscraper",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "project_id"
+            },
+            {
+              "name": "client_name"
+            },
+            {
+              "name": "contact_email"
+            },
+            {
+              "name": "existing_url"
+            }
+          ]
+        }
+      },
+      "id": "4c43a0c5-9ade-4350-a373-c928f659d72f",
+      "name": "Scrape Input",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "base_url",
+              "value": "={{ $json.existing_url.replace(/\\/$/, \"\") }}",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "sitemap_url",
+              "value": "={{ $json.existing_url.replace(/\\/$/, \"\") }}/sitemap.xml",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "a94e5820-87a4-4418-9095-380f153a08b7",
+      "name": "Prepare Base URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.sitemap_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "60909f31-a818-4d81-8de1-2bb9bdae2d0c",
+      "name": "Download Sitemap XML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        448,
+        528
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kandidaten-URLs (Startseite + Sitemap + Homepage-Discovery, evtl. nur die Startseite):\n{{ $json.output.urls }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Du bist ein Web-Architektur-Agent. Du erhaeltst eine Liste von Kandidaten-URLs (Startseite + optionale Sitemap- und Discovery-Treffer). Waehle die inhaltlich relevanten URLs der Domain aus. Nimm IMMER die Startseite (base_url) als erste URL auf, auch wenn die Liste sonst leer ist. Filtere irrelevante Seiten (Impressum, Datenschutz, AGB, Login/Auth, Tag-/Kategorie-Archive) in ignored_urls. Gib maximal 15 relevante urls zurueck. Antworte ausschliesslich im vorgegebenen JSON-Schema."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "173270c6-ac58-4faf-ab59-b9ed53504d50",
+      "name": "Categorize & Filter URLs",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1488,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "id": "529371d7-565c-4400-a007-6c6b37b72343",
+      "name": "Claude (Categorize)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        1504,
+        752
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "hbHNms2LueAkGaRn",
+          "name": "anthropic-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"website\": \"acme.com\", \"urls\": [\"https://acme.com/\", \"https://acme.com/leistungen\"], \"ignored_urls\": [\"https://acme.com/impressum\"] }"
+      },
+      "id": "d503e510-8185-406c-9a98-778aef36fe7b",
+      "name": "URL List Schema",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1632,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Domain: {{ $json.output.website }}\n\nRelevante URLs:\n{{ JSON.stringify($json.output.urls) }}\n\nAnalysiere die Startseite und 1-2 weitere Seiten und extrahiere das globale Corporate Identity (Farben, Fonts, Navigation, Logo). Gib ausschliesslich das CI-JSON-Schema zurueck.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist ein Lead UI/UX Architekt. Nutze die Tools \"Jina Markdown Reader\" (sichtbarer Inhalt, Navigation) und \"Raw HTML Source Extractor\" (Hex-Farben in <style>, font-family, Logo-Pfad). Extrahiere Primaer-/Sekundaerfarbe, Hintergrund, Textfarbe, Footer-BG, Heading-/Body-Font, Header- und Footer-Navigation (max 6 Header-Links) sowie die Logo-URL. Erfinde keine Hex-Codes; wenn unauffindbar, schaetze konservativ aus textlichen Hinweisen. Gib valides JSON exakt nach Schema zurueck.",
+          "maxIterations": 8
+        }
+      },
+      "id": "d3a42e1f-5523-497a-a2b3-49bca662e442",
+      "name": "Corporate Identify Analyzer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1968,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "id": "a9838624-72b3-4be3-9727-8d59626a9be0",
+      "name": "Claude (CI)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        1840,
+        448
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "hbHNms2LueAkGaRn",
+          "name": "anthropic-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', 'Die exakte URL der Unterseite, die als sauberes Markdown abgerufen werden soll') }}",
+        "options": {
+          "outputFormat": "markdown"
+        },
+        "requestOptions": {}
+      },
+      "id": "cf1ef78b-530c-4709-96ec-1f4df9083c84",
+      "name": "Jina Markdown Reader",
+      "type": "n8n-nodes-base.jinaAiTool",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        448
+      ],
+      "credentials": {
+        "jinaAiApi": {
+          "id": "0KXXOWRIJVHG23pw",
+          "name": "Jina AI free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', 'Die exakte URL, deren roher HTML-Quellcode (fuer Hex-Farben, font-family, Logo-Pfad) abgerufen werden soll') }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "8e69d0b0-3a84-4e2f-a72a-a97e5000830f",
+      "name": "Raw HTML Source Extractor",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2096,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"site_config\": { \"colors\": { \"primary\": \"#1d4ed8\", \"secondary\": \"#9333ea\", \"background\": \"#ffffff\", \"text\": \"#111827\", \"footer_bg\": \"#0f172a\" }, \"fonts\": { \"heading\": \"Syne, sans-serif\", \"body\": \"Inter, sans-serif\" }, \"navigation\": { \"header\": [{ \"label\": \"Home\", \"link\": \"/\" }], \"footer_links\": [{ \"label\": \"Impressum\", \"link\": \"/impressum\" }] }, \"assets\": { \"logo_url\": \"https://acme.com/logo.svg\" } } }"
+      },
+      "id": "bab014cb-552e-486f-93c5-fae3972f2580",
+      "name": "CI Schema",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2224,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "e31d6d4f-5d51-4a31-802b-e9110ae1ec98",
+      "name": "Merge CI + Content",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2432,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Domain: {{ $(\"Categorize & Filter URLs\").item.json.output.website }}\n\nRelevante URLs:\n{{ JSON.stringify($(\"Categorize & Filter URLs\").item.json.output.urls) }}\n\nZu ignorieren:\n{{ JSON.stringify($(\"Categorize & Filter URLs\").item.json.output.ignored_urls) }}\n\nCrawle die Startseite und 1-2 weitere inhaltliche Seiten und liefere das Sections-JSON.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist ein Web-Content-Extraktions-Agent. Nutze das Tool \"Jina Content Scraper\" um Seiten als Markdown zu crawlen. Teile den Hauptinhalt in sinnvolle Sektionen (Typen: hero, features, text_image, stats, testimonials, pricing, faq, cta, contact_form, text_only). KEINE Halluzinationen: Texte exakt uebernehmen. Ignoriere Header-Navigation, Footer, Cookie-Banner. Max 8 Sektionen. Jede Sektion mit headline und konkreten Items/CTAs. Gib valides JSON exakt nach Schema zurueck.",
+          "maxIterations": 10
+        }
+      },
+      "id": "ace7fba4-29fe-477d-b238-03c58c7a1268",
+      "name": "Content Structure Analyzer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1968,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "id": "934d4c23-81ef-4eb2-adcc-525cf84d15cd",
+      "name": "Claude (Content)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        1904,
+        960
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "hbHNms2LueAkGaRn",
+          "name": "anthropic-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', 'Die exakte URL der inhaltlichen Unterseite, die als Markdown gecrawlt werden soll') }}",
+        "options": {
+          "outputFormat": "markdown"
+        },
+        "requestOptions": {}
+      },
+      "id": "9abc2098-87a0-4230-a5f7-c3a0587c7d59",
+      "name": "Jina Content Scraper",
+      "type": "n8n-nodes-base.jinaAiTool",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        960
+      ],
+      "credentials": {
+        "jinaAiApi": {
+          "id": "0KXXOWRIJVHG23pw",
+          "name": "Jina AI free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"sections\": [{ \"type\": \"hero\", \"headline\": \"Willkommen\", \"subline\": \"Kurzbeschreibung\", \"cta\": \"Kontakt\", \"cta_url\": \"/kontakt\", \"text\": \"\", \"items\": [{ \"title\": \"Feature\", \"description\": \"Beschreibung\", \"value\": \"500+\", \"label\": \"Kunden\", \"question\": \"\", \"answer\": \"\", \"author\": \"\", \"role\": \"\", \"quote\": \"\" }] }] }"
+      },
+      "id": "754b9b26-6532-41b4-880f-b56209ed80e9",
+      "name": "Sections Schema",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2160,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "project_id",
+              "value": "={{ $(\"Scrape Input\").item.json.project_id }}",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "client_name",
+              "value": "={{ $(\"Scrape Input\").item.json.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "r3",
+              "name": "contact_email",
+              "value": "={{ $(\"Scrape Input\").item.json.contact_email }}",
+              "type": "string"
+            },
+            {
+              "id": "r4",
+              "name": "existing_url",
+              "value": "={{ $(\"Scrape Input\").item.json.existing_url }}",
+              "type": "string"
+            },
+            {
+              "id": "r5",
+              "name": "source",
+              "value": "scrape",
+              "type": "string"
+            },
+            {
+              "id": "r6",
+              "name": "source_ref",
+              "value": "={{ $(\"Scrape Input\").item.json.existing_url }}",
+              "type": "string"
+            },
+            {
+              "id": "r7",
+              "name": "item_id",
+              "value": "=scrape-{{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "r8",
+              "name": "extracted_json",
+              "value": "={{ JSON.stringify({ scrape: { source_url: $(\"Scrape Input\").item.json.existing_url, site_config: ($(\"Corporate Identify Analyzer\").item.json.output?.site_config ?? {}), sections: ($(\"Content Structure Analyzer\").item.json.output?.sections ?? []) } }) }}",
+              "type": "string"
+            },
+            {
+              "id": "r9",
+              "name": "raw_content",
+              "value": "=DEEP SCRAPE: {{ $(\"Scrape Input\").item.json.existing_url }}\n\n## CI / DESIGN\n{{ JSON.stringify($(\"Corporate Identify Analyzer\").item.json.output?.site_config ?? {}) }}\n\n## SEKTIONEN\n{{ JSON.stringify($(\"Content Structure Analyzer\").item.json.output?.sections ?? []) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4ad5fde2-b495-4de4-81e5-0c36a3ac6ba6",
+      "name": "Assemble Scrape Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2656,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "WAGQeXQpNbxT25Kj",
+          "cachedResultName": "projects"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "project_id",
+              "keyValue": "={{ $json.project_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "project_id": "={{ $json.project_id }}",
+            "client_name": "={{ $json.client_name }}",
+            "contact_email": "={{ $json.contact_email }}",
+            "existing_url": "={{ $json.existing_url }}"
+          },
+          "schema": [
+            {
+              "id": "project_id",
+              "displayName": "project_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "contact_email",
+              "displayName": "contact_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "existing_url",
+              "displayName": "existing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e173cac7-e582-4cbd-bc22-3c239123c4ee",
+      "name": "Upsert Project",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2880,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "VCKyqsAUxqEEnLJV",
+          "cachedResultName": "briefing_items"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "item_id": "={{ $(\"Assemble Scrape Result\").item.json.item_id }}",
+            "project_id": "={{ $(\"Assemble Scrape Result\").item.json.project_id }}",
+            "source": "={{ $(\"Assemble Scrape Result\").item.json.source }}",
+            "source_ref": "={{ $(\"Assemble Scrape Result\").item.json.source_ref }}",
+            "raw_content": "={{ $(\"Assemble Scrape Result\").item.json.raw_content }}",
+            "extracted_json": "={{ $(\"Assemble Scrape Result\").item.json.extracted_json }}"
+          },
+          "schema": [
+            {
+              "id": "item_id",
+              "displayName": "item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "project_id",
+              "displayName": "project_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source_ref",
+              "displayName": "source_ref",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "raw_content",
+              "displayName": "raw_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "extracted_json",
+              "displayName": "extracted_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8f42deb3-15aa-4f35-ad2d-81f9e22210b9",
+      "name": "Insert Briefing Item",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3104,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Deep Scraper\nSitemap -> URL-Kategorisierung -> zwei parallele Agenten (CI-Design via Jina+HTML, Content-Struktur via Jina) -> strukturierte Speicherung als briefing_item (source=scrape) mit reichem extracted_json (site_config + sections).",
+        "height": 200,
+        "width": 1004,
+        "color": 4
+      },
+      "id": "92332dc5-570f-47d2-9256-469cbf7ae633",
+      "name": "Sticky Note b429886e",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        128,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = ($('Prepare Base URL').first().json.base_url || '').replace(/\\/$/, '');\nconst raw = $json.data ?? $json.body ?? '';\nconst text = typeof raw === 'string' ? raw : JSON.stringify(raw);\nconst isXml = /<urlset|<sitemapindex/i.test(text);\nlet locs = [];\nif (isXml) {\n  locs = [...text.matchAll(/<loc>\\s*([^<\\s]+)\\s*<\\/loc>/gi)].map(m => m[1].trim());\n}\nreturn [{ json: { base_url: base, sitemap_found: isXml, sitemap_urls: locs } }];"
+      },
+      "id": "4e7fe290-cbe9-40fe-ae3e-3f654742220d",
+      "name": "Extract Sitemap URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-haiku-4-5",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "id": "6efa9807-96d9-4db2-80fa-e51bf0bf6b91",
+      "name": "Claude Haiku (Discovery)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        752
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "hbHNms2LueAkGaRn",
+          "name": "anthropic-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"urls\": [\"https://acme.com/leistungen\", \"https://acme.com/ueber-uns\", \"https://acme.com/kontakt\"] }"
+      },
+      "id": "16fbb765-1219-4cc5-bb55-42b4bba96997",
+      "name": "Discovery Schema",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Basis-URL: {{ $json.base_url }}\nSitemap gefunden: {{ $json.sitemap_found }}\nBereits bekannte Sitemap-URLs:\n{{ JSON.stringify($json.sitemap_urls) }}\n\nFinde ALLE real existierenden internen Seiten dieser Website und gib am Ende die vollstaendige, validierte Liste zurueck.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist ein hartnaeckiger Web-Discovery-Agent. Ziel: eine moeglichst vollstaendige Liste ALLER real existierenden internen Seiten der Domain.\n\nVorgehen:\n1) Lies zuerst die Startseite mit dem Tool \"Jina Discovery Reader\" und sammle alle dort verlinkten internen Pfade.\n2) Folge wichtigen gefundenen Links und lies diese Unterseiten ebenfalls, um weitere Links (z.B. aus Navigation/Footer) zu entdecken.\n3) Probiere zusaetzlich gaengige Pfade AKTIV aus und pruefe ihre Existenz mit dem Tool \"Discovery HTTP Probe\" (rohe HTTP-Anfrage). Kandidaten u.a.: /about, /about-us, /services, /solutions, /products, /pricing, /contact, /contact-us, /team, /careers, /blog, /news, /portfolio, /case-studies, /projects, /industries, /partners, /technology, /support, /faq, /testimonials, /clients.\n4) Werte den HTTP-Status aus: statusCode 200 = Seite existiert; 3xx auf gleiche Domain = existiert (finale Ziel-URL aufnehmen); 404/4xx/5xx = verwerfen.\n5) Nimm nur URLs derselben Domain auf. Schliesse aus: externe Domains, mailto:, tel:, Anker (#), reine Assets (.js, .css, .png, .jpg, .avif, .svg, .pdf, .ico).\n6) Arbeite iterativ weiter, bis du keine neuen validen Seiten mehr findest. Lieber etwas mehr Aufwand, damit nichts uebersehen wird.\n\nGib am Ende ausschliesslich valides JSON nach Schema { urls: [...] } mit absoluten, deduplizierten URLs zurueck. Wenn nur die Startseite verifizierbar ist, gib zumindest diese zurueck.",
+          "maxIterations": 30
+        }
+      },
+      "id": "0e112354-23e7-4551-82f1-803bb0f99ccd",
+      "name": "Page Discovery Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1024,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', 'Die exakte interne URL, die als Markdown gelesen werden soll, um weitere interne Links zu finden') }}",
+        "options": {
+          "outputFormat": "markdown"
+        },
+        "requestOptions": {}
+      },
+      "id": "b308defe-be02-4f39-8ce1-cd531b6d986b",
+      "name": "Jina Discovery Reader",
+      "type": "n8n-nodes-base.jinaAiTool",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        752
+      ],
+      "credentials": {
+        "jinaAiApi": {
+          "id": "0KXXOWRIJVHG23pw",
+          "name": "Jina AI free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', 'Die exakte URL, deren Existenz per HTTP-Status geprueft werden soll') }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "60b6d6dd-3fdd-4dda-8c9d-5f6ce7c62b23",
+      "name": "Discovery HTTP Probe",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1152,
+        752
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Scrape Input": {
+      "main": [
+        [
+          {
+            "node": "Prepare Base URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Base URL": {
+      "main": [
+        [
+          {
+            "node": "Download Sitemap XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Categorize & Filter URLs": {
+      "main": [
+        [
+          {
+            "node": "Corporate Identify Analyzer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Content Structure Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude (Categorize)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Categorize & Filter URLs",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL List Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Categorize & Filter URLs",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Corporate Identify Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Merge CI + Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude (CI)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Corporate Identify Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jina Markdown Reader": {
+      "ai_tool": [
+        [
+          {
+            "node": "Corporate Identify Analyzer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Raw HTML Source Extractor": {
+      "ai_tool": [
+        [
+          {
+            "node": "Corporate Identify Analyzer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CI Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Corporate Identify Analyzer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge CI + Content": {
+      "main": [
+        [
+          {
+            "node": "Assemble Scrape Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Structure Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Merge CI + Content",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Claude (Content)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Structure Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jina Content Scraper": {
+      "ai_tool": [
+        [
+          {
+            "node": "Content Structure Analyzer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sections Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Structure Analyzer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Scrape Result": {
+      "main": [
+        [
+          {
+            "node": "Upsert Project",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Project": {
+      "main": [
+        [
+          {
+            "node": "Insert Briefing Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Sitemap XML": {
+      "main": [
+        [
+          {
+            "node": "Extract Sitemap URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Sitemap URLs": {
+      "main": [
+        [
+          {
+            "node": "Page Discovery Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Page Discovery Agent": {
+      "main": [
+        [
+          {
+            "node": "Categorize & Filter URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Haiku (Discovery)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Page Discovery Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discovery Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Page Discovery Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jina Discovery Reader": {
+      "ai_tool": [
+        [
+          {
+            "node": "Page Discovery Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discovery HTTP Probe": {
+      "ai_tool": [
+        [
+          {
+            "node": "Page Discovery Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "42bcbf7d-1ceb-4a99-b0b1-8cd4e4ed51ec",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "538d4c63d3afcb8d4d6a2c55d2ac6cebf297210295a8bbd65d61cdf4740b6e1d"
+  },
+  "nodeGroups": [],
+  "id": "zVs2TiZKFNcv1AjZ",
+  "tags": [
+    {
+      "updatedAt": "2026-06-05T12:55:27.543Z",
+      "createdAt": "2026-06-05T12:55:27.543Z",
+      "id": "QFYwL3xbzmH5iUkv",
+      "name": "Onepage"
+    }
+  ]
+}

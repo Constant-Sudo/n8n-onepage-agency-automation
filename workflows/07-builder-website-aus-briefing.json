@@ -1,0 +1,307 @@
+{
+  "name": "Builder: Website aus Briefing",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Website bauen",
+        "formDescription": "Projekt-ID eingeben, um aus den gesammelten Briefing-Daten eine Onepage-Website zu erstellen.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Projekt-ID",
+              "fieldName": "project_id",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d7ff3d6b-a342-4a7b-a291-7097ed687227",
+      "name": "Onepage Builder Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        112
+      ],
+      "webhookId": "2fcea0cb-6c64-4250-93bb-88416f9bb1d1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "VCKyqsAUxqEEnLJV",
+          "cachedResultName": "briefing_items"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "project_id",
+              "keyValue": "={{ $json.project_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "2dc88a43-f89d-426e-ab4e-c74836e8ece2",
+      "name": "Load Briefing Items",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Projekt-ID: {{ $(\"Onepage Builder Form\").item.json.project_id }}\n\nKonsolidiere die folgenden Briefing-Inputs (aus Formular, Slack, E-Mail, Meeting, Scrape) zu EINEM stimmigen Website-Bauplan und baue dann die Website.\n\nINPUTS:\n{{ $(\"Load Briefing Items\").all().map(i => (\"[\" + i.json.source + \"] \" + i.json.raw_content + \"\\nEXTRAHIERT: \" + i.json.extracted_json)).join(\"\\n\\n---\\n\\n\") }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist ein Website-Build-Agent fuer die Agentur. Du hast Zugriff auf das Tool \"OnePage MCP\".\n\nWICHTIG: Bevor du ein schreibendes OnePage-Tool nutzt, rufe IMMER zuerst onepage_skill_get fuer die passende Aufgabe auf (server-seitig erzwungen) und befolge die Skill-Anweisungen.\n\nVorgehen:\n1. Fuehre alle Briefing-Inputs zu einem konsolidierten Briefing zusammen (Widersprueche aufloesen, Dubletten entfernen, finale Sektionsliste, Tonalitaet, Farben, Texte).\n2. Baue die Website iterativ (Ping-Pong) mit OnePage MCP: create_site, dann Branding (create_color_schema, create_font_kit), create_page, pro Sektion create_vibe_section + write_files/edit_files, dann build_react_app. Bei Build-Fehlern den Build-Output lesen, korrigieren und neu bauen.\n3. Veroeffentliche die Seite mit publish_page.\n4. Gib am Ende onepage_site_id, onepage_page_url, das consolidated_brief und eine kurze summary zurueck.",
+          "maxIterations": 60
+        }
+      },
+      "id": "9c9af530-8ddb-4176-9de4-3a5272040a65",
+      "name": "Build Website Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        512,
+        112
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-8",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.8"
+        },
+        "options": {
+          "maxTokensToSample": 8000
+        }
+      },
+      "id": "3792ccf8-a70d-4a2d-ae60-59a34f4b35ce",
+      "name": "Claude Opus (Build)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        336
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "hbHNms2LueAkGaRn",
+          "name": "anthropic-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://mcp.onepage.io/mcp",
+        "authentication": "mcpOAuth2Api",
+        "options": {}
+      },
+      "id": "3212523e-f938-4a1a-981c-403a45f175d7",
+      "name": "OnePage MCP",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        336
+      ],
+      "credentials": {
+        "mcpOAuth2Api": {
+          "id": "P5P9dgOm18hi5m7U",
+          "name": "Onepage Cartellieri"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"onepage_site_id\": \"site_123\", \"onepage_page_url\": \"https://acme.onepage.io\", \"consolidated_brief\": \"Kurzes konsolidiertes Briefing\", \"summary\": \"Was gebaut wurde\" }"
+      },
+      "id": "045c552d-ebdd-4ae2-9e48-3569fb99e20a",
+      "name": "Build Result Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "WAGQeXQpNbxT25Kj",
+          "cachedResultName": "projects"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "project_id",
+              "keyValue": "={{ $(\"Onepage Builder Form\").item.json.project_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "built",
+            "onepage_site_id": "={{ $json.output.onepage_site_id }}",
+            "onepage_page_url": "={{ $json.output.onepage_page_url }}",
+            "consolidated_brief": "={{ $json.output.consolidated_brief }}"
+          },
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "onepage_site_id",
+              "displayName": "onepage_site_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "onepage_page_url",
+              "displayName": "onepage_page_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "consolidated_brief",
+              "displayName": "consolidated_brief",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ef2a245a-801d-42f5-9d2b-7c442ce092f0",
+      "name": "Update Project Built",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        912,
+        112
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Onepage Builder Form": {
+      "main": [
+        [
+          {
+            "node": "Load Briefing Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Briefing Items": {
+      "main": [
+        [
+          {
+            "node": "Build Website Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Website Agent": {
+      "main": [
+        [
+          {
+            "node": "Update Project Built",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Opus (Build)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Build Website Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OnePage MCP": {
+      "ai_tool": [
+        [
+          {
+            "node": "Build Website Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Result Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Build Website Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "2e0a608d-77e0-430a-9b8b-22e984c304fd",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "538d4c63d3afcb8d4d6a2c55d2ac6cebf297210295a8bbd65d61cdf4740b6e1d"
+  },
+  "nodeGroups": [],
+  "id": "kFQSWNCwqajn5kxp",
+  "tags": [
+    {
+      "updatedAt": "2026-06-24T08:11:32.916Z",
+      "createdAt": "2026-06-24T08:11:32.916Z",
+      "id": "7g4UsbDivothQFhH",
+      "name": "Onepage"
+    }
+  ]
+}

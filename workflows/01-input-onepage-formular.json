@@ -1,0 +1,359 @@
+{
+  "name": "Input: Onepage Formular",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "onepage-form",
+        "options": {}
+      },
+      "id": "7506e661-9392-4b2a-b83a-4f936cf84e99",
+      "name": "Onepage Form Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b0c4aae2-fe65-4f07-b868-a0c25845ec22"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "project_id",
+              "value": "={{ ($json.body?.project_id ?? $json.body?.contact_email ?? $json.body?.email ?? $json.contact_email ?? $json.email ?? \"unknown\").toString().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "client_name",
+              "value": "={{ $json.body?.client_name ?? $json.body?.company ?? $json.body?.name ?? $json.client_name ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "contact_email",
+              "value": "={{ $json.body?.contact_email ?? $json.body?.email ?? $json.contact_email ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "slack_channel_id",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "existing_url",
+              "value": "={{ $json.body?.existing_url ?? $json.body?.website ?? $json.existing_url ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "source",
+              "value": "form",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "source_ref",
+              "value": "=form-{{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f8",
+              "name": "raw_content",
+              "value": "={{ JSON.stringify($json.body ?? $json) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ccdadc6d-89c7-48e8-afbb-3bbc7c5ec890",
+      "name": "Normalize Form",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "yJuepJKq7qXTwjNn",
+          "cachedResultName": "Sub: extract_and_store"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "project_id": "={{ $json.project_id }}",
+            "client_name": "={{ $json.client_name }}",
+            "contact_email": "={{ $json.contact_email }}",
+            "slack_channel_id": "={{ $json.slack_channel_id }}",
+            "existing_url": "={{ $json.existing_url }}",
+            "source": "={{ $json.source }}",
+            "source_ref": "={{ $json.source_ref }}",
+            "raw_content": "={{ $json.raw_content }}"
+          },
+          "schema": [
+            {
+              "id": "project_id",
+              "displayName": "project_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "contact_email",
+              "displayName": "contact_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "slack_channel_id",
+              "displayName": "slack_channel_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "existing_url",
+              "displayName": "existing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source_ref",
+              "displayName": "source_ref",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "raw_content",
+              "displayName": "raw_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1a2327d9-214c-4937-8490-8e4e3b9055a5",
+      "name": "Store Form (extract_and_store)",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $(\"Normalize Form\").item.json.existing_url }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              },
+              "id": "8c8f7fba-bca8-4999-8b56-986a21e7df7e"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "806e0e99-4466-4f71-96f1-e36dd0e1e75e",
+      "name": "Has Website?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "zVs2TiZKFNcv1AjZ",
+          "cachedResultName": "Sub: Webscraper (Deep, agentisch)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "project_id": "={{ $(\"Normalize Form\").item.json.project_id }}",
+            "client_name": "={{ $(\"Normalize Form\").item.json.client_name }}",
+            "contact_email": "={{ $(\"Normalize Form\").item.json.contact_email }}",
+            "existing_url": "={{ $(\"Normalize Form\").item.json.existing_url }}"
+          },
+          "schema": [
+            {
+              "id": "project_id",
+              "displayName": "project_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "contact_email",
+              "displayName": "contact_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "existing_url",
+              "displayName": "existing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3b4e4592-f578-49dd-a479-8b7f58783c24",
+      "name": "Run Scraper",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Onepage Form Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Form": {
+      "main": [
+        [
+          {
+            "node": "Store Form (extract_and_store)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Form (extract_and_store)": {
+      "main": [
+        [
+          {
+            "node": "Has Website?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Website?": {
+      "main": [
+        [
+          {
+            "node": "Run Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "8bbbf84e-ac55-4611-b2ad-bd44f45a2525",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "538d4c63d3afcb8d4d6a2c55d2ac6cebf297210295a8bbd65d61cdf4740b6e1d"
+  },
+  "nodeGroups": [],
+  "id": "evQHmYTPf6MLlEKk",
+  "tags": [
+    {
+      "updatedAt": "2026-06-24T08:11:32.916Z",
+      "createdAt": "2026-06-24T08:11:32.916Z",
+      "id": "7g4UsbDivothQFhH",
+      "name": "Onepage"
+    }
+  ]
+}
