@@ -14,7 +14,7 @@ Sobald jemand eine Slack-Nachricht mit dem Emoji 📋 (clipboard) markiert, läd
 2. **"Create New App" → "From scratch"**.
 3. Namen vergeben (z. B. "Agentur Briefing Bot") und das Workspace der Agentur auswählen.
 
-> - Hier bitte Screenshot von api.slack.com/apps → Create New App einfügen
+![Slack API – Create New App Dialog](img/image-2.png)
 
 ---
 
@@ -26,7 +26,7 @@ Sobald jemand eine Slack-Nachricht mit dem Emoji 📋 (clipboard) markiert, läd
    - `channels:history`, `groups:history`, `im:history`, `mpim:history` (damit der Node "Fetch Slack Message" den Nachrichtentext laden kann)
    - `channels:read`, `users:read` (empfohlen für ID-Auflösung)
 
-> - Hier bitte Screenshot von Slack App → OAuth & Permissions → Bot Token Scopes einfügen
+![Slack App – OAuth & Permissions mit eingetragenen Bot Token Scopes](img/image-3.png)
 
 ---
 
@@ -35,7 +35,7 @@ Sobald jemand eine Slack-Nachricht mit dem Emoji 📋 (clipboard) markiert, läd
 1. Oben auf der Seite **"OAuth & Permissions"** auf **"Install to Workspace"** klicken (Workspace-Admin-Rechte nötig) und Berechtigungen bestätigen.
 2. Den angezeigten **"Bot User OAuth Token"** (beginnt mit `xoxb-`) kopieren.
 
-> - Hier bitte Screenshot von Slack App → Bot User OAuth Token einfügen
+![Slack App – Bot User OAuth Token nach erfolgreicher Installation](img/image-4.png)
 
 ---
 
@@ -46,7 +46,7 @@ Sobald jemand eine Slack-Nachricht mit dem Emoji 📋 (clipboard) markiert, läd
 3. Die kopierte n8n-URL als **"Request URL"** eintragen – Slack verifiziert die URL automatisch (n8n muss dafür laufen/erreichbar sein).
 4. Unter **"Subscribe to bot events"** das Event **"reaction_added"** hinzufügen, speichern.
 
-> - Hier bitte Screenshot von Slack App → Event Subscriptions → Request URL + reaction_added einfügen
+![Slack App – Event Subscriptions mit eingetragener n8n-URL und reaction_added Event](img/image-5.png)
 
 ---
 
@@ -62,7 +62,7 @@ Die App sieht nur Reaktionen/Nachrichten in Kanälen, in denen sie Mitglied ist.
 2. Den in Schritt 3 kopierten Bot User OAuth Token als Access Token einfügen, speichern.
 3. Diese Credential in **beiden** Nodes hinterlegen: "Slack Reaction Trigger" und "Fetch Slack Message".
 
-> - Hier bitte Screenshot vom n8n-Credential-Dialog "Slack API" einfügen
+![n8n – Credential-Dialog Slack API mit eingetragenem Bot Token](img/image-6.png)
 
 ---
 

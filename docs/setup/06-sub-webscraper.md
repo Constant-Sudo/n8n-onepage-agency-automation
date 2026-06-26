@@ -18,7 +18,7 @@ Falls bereits im Rahmen von "Sub: extract_and_store" eine Anthropic-Credential a
 2. In n8n: **Credentials → New Credential → "Anthropic"** → Key einfügen, speichern.
 3. Credential in **allen vier** oben genannten Claude-Nodes hinterlegen.
 
-> - Hier bitte Screenshot vom n8n-Credential-Dialog "Anthropic" einfügen
+![n8n – Credential-Dialog Anthropic API, in den vier Claude-Nodes zu hinterlegen](img/image-15.png)
 
 ---
 
@@ -30,13 +30,13 @@ Die Nodes **"Jina Markdown Reader"**, **"Jina Content Scraper"** und **"Jina Dis
 2. Dort **API Key & Billing** auswählen – ein kostenloser Key mit 10 Millionen Frei-Tokens kann ohne separate Kontoanlage erzeugt werden.
 3. Key kopieren.
 
-> - Hier bitte Screenshot von jina.ai → API → API Key & Billing einfügen
+![jina.ai – API Key & Billing Seite mit kostenlosem Kontingent](img/image-17.png)
 
 4. In n8n: **Credentials → New Credential → "Jina AI"**.
 5. API-Key einfügen, speichern.
 6. Credential in allen drei Jina-Nodes ("Jina Markdown Reader", "Jina Content Scraper", "Jina Discovery Reader") hinterlegen.
 
-> - Hier bitte Screenshot vom n8n-Credential-Dialog "Jina AI" einfügen
+![n8n – Credential-Dialog Jina AI mit eingetragenem API-Key](img/image-18.png)
 
 ---
 

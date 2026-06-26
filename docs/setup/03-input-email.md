@@ -14,7 +14,7 @@ Pollt das Gmail-Postfach jede Minute nach ungelesenen Mails mit dem Label **"bri
 2. Links auf **"Weitere" → "Neues Label erstellen"** (Zahnrad-Einstellungen → Labels geht ebenfalls).
 3. Label exakt **"briefing"** benennen (Kleinschreibung, da der Node-Filter `label:briefing` lautet).
 
-> - Hier bitte Screenshot von Gmail → Labels → "briefing" erstellen einfügen
+![Gmail – Label "briefing" in der Labels-Verwaltung anlegen](img/image-7.png)
 
 4. Optional, aber empfohlen: einen **Filter** anlegen (Einstellungen → Filter und blockierte Adressen → Neuen Filter erstellen), der eingehende Briefing-Mails automatisch mit "briefing" labelt, z. B. nach Absender-Domain oder Betreff-Stichwort.
 
@@ -25,7 +25,7 @@ Pollt das Gmail-Postfach jede Minute nach ungelesenen Mails mit dem Label **"bri
 1. [console.cloud.google.com](https://console.cloud.google.com) öffnen, neues Projekt anlegen (oder bestehendes Agentur-Projekt nutzen).
 2. **APIs & Services → Bibliothek** → nach "Gmail API" suchen → aktivieren.
 
-> - Hier bitte Screenshot von Google Cloud Console → APIs & Services → Gmail API aktiviert einfügen
+![Google Cloud Console – Gmail API in der Bibliothek aktiviert](img/image-8.png)
 
 3. **APIs & Services → OAuth-Zustimmungsbildschirm** einrichten (externe oder interne Nutzer je nach Workspace-Setup). Solange die App im Status "Testing" ist, unter "Audience" die genutzte Gmail-Adresse als Testnutzer hinzufügen.
 4. **APIs & Services → Anmeldedaten → "+ Anmeldedaten erstellen" → OAuth-Client-ID**, Anwendungstyp **"Webanwendung"**.
@@ -39,7 +39,7 @@ Pollt das Gmail-Postfach jede Minute nach ungelesenen Mails mit dem Label **"bri
 3. In der Google Cloud Console beim erstellten OAuth-Client unter **"Autorisierte Weiterleitungs-URIs"** genau diese URL einfügen, speichern.
 4. Aus Google die **Client-ID** und das **Client-Secret** kopieren und in die n8n-Credential einfügen.
 
-> - Hier bitte Screenshot vom n8n-Credential-Dialog "Gmail OAuth2 API" mit Redirect-URL einfügen
+![n8n – Credential-Dialog Gmail OAuth2 API mit Redirect-URL und Client-ID](img/image-9.png)
 
 5. In n8n auf **"Sign in with Google"/"Connect"** klicken, mit dem Agentur-Google-Account einloggen und Zugriff erlauben.
 6. Diese Credential im Node **"Gmail Briefing Trigger"** hinterlegen.

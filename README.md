@@ -107,4 +107,4 @@ Mockdaten zum Testen liegen unter [`schemas/`](schemas/)
 
 ## Lizenz & Kontakt
 
-[MIT](LICENSE) · Constantin Cartellieri — Onepage MCP × Adcon.
+[MIT](LICENSE) · cartellieri@adcon-tech.de

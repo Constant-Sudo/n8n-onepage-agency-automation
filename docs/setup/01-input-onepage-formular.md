@@ -14,7 +14,7 @@ Webhook empfängt eingehende Leads aus einem Onepage-CRM-Formular → normalisie
 
 Im Node **"Onepage Form Webhook"** die **Production-URL** kopieren (Pfad endet auf `/onepage-form`).
 
-> - Hier bitte Screenshot vom geöffneten "Onepage Form Webhook"-Node mit sichtbarer Production-URL einfügen
+![n8n – Onepage Form Webhook Node mit sichtbarer Production-URL](img/image-1.png)
 
 ---
 
@@ -26,7 +26,7 @@ Im Node **"Onepage Form Webhook"** die **Production-URL** kopieren (Pfad endet a
 4. In der Liste der Integrationen ganz nach unten scrollen und **"Webhook"** auswählen.
 5. Die in Schritt 1 kopierte n8n-URL einfügen und **Submit** klicken.
 
-> - Hier bitte Screenshot von Onepage → Projekt → CRM → Add Integration → Webhook einfügen
+![Onepage CRM – Add Integration → Webhook mit eingetragener n8n-URL](img/image.png)
 
 Ab sofort wird bei jedem neuen Lead/Formular-Eintrag automatisch ein JSON-Paket an die n8n-URL gesendet.
 

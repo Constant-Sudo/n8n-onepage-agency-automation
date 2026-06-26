@@ -18,7 +18,7 @@ Wichtig vorab: **Fireflies kann das automatisch von sich aus**, **Granola nicht 
 ### 1.1 Webhook-URL aus n8n kopieren
 Im n8n-Workflow den Node **"Fireflies Webhook"** öffnen und die **Production-Webhook-URL** kopieren (Pfad endet auf `/meeting-fireflies`).
 
-> - Hier bitte Screenshot vom geöffneten "Fireflies Webhook"-Node mit sichtbarer Production-URL einfügen
+![n8n – Fireflies Webhook Node mit sichtbarer Production-URL](img/image-10.png)
 
 ### 1.2 Webhook in Fireflies eintragen
 Fireflies unterstützt native Webhooks, die automatisch ausgelöst werden, sobald ein Meeting fertig transkribiert ist (Event "Transcription completed"). Das mitgeschickte Feld heißt `meetingId` – passt exakt zu dem, was der n8n-Node erwartet.
@@ -28,7 +28,7 @@ Fireflies unterstützt native Webhooks, die automatisch ausgelöst werden, sobal
 3. Die in 1.1 kopierte n8n-URL eintragen und speichern.
 4. Optional: Webhook-Auth aktivieren, falls vorhanden (zusätzliche Absicherung).
 
-> - Hier bitte Screenshot von fireflies.ai Settings → Developer Settings → Webhooks einfügen
+![Fireflies – Developer Settings → Webhooks mit eingetragener n8n-URL](img/image-11.png)
 
 ### 1.3 Fireflies API-Key holen
 Dieser Key wird gebraucht, weil der n8n-Node "Fetch Fireflies Transcript" nach Eingang der `meetingId` per GraphQL-Request das volle Transkript bei Fireflies abruft.
@@ -36,14 +36,14 @@ Dieser Key wird gebraucht, weil der n8n-Node "Fetch Fireflies Transcript" nach E
 1. In fireflies.ai: **Settings → Integrations → Developer** (Bereich "Fireflies API").
 2. API-Key kopieren und sicher zwischenspeichern (z. B. Passwortmanager).
 
-> - Hier bitte Screenshot von fireflies.ai Settings → Integrations → Developer (API-Key-Bereich) einfügen
+![Fireflies – Integrations → Developer mit API-Key-Bereich](img/image-12.png)
 
 ### 1.4 Credential in n8n anlegen
 1. In n8n: **Credentials → New Credential → "Bearer Auth"** (Generic Auth Type: HTTP Bearer Auth).
 2. Als Token den in 1.3 kopierten Fireflies-API-Key einfügen, Credential z. B. "Fireflies API" benennen, speichern.
 3. Im Node **"Fetch Fireflies Transcript"** unter Authentication diese Credential auswählen.
 
-> - Hier bitte Screenshot vom n8n-Credential-Dialog "Bearer Auth" einfügen
+![n8n – Credential-Dialog Bearer Auth mit Fireflies API-Key](img/image-13.png)
 
 ---
 
@@ -58,14 +58,12 @@ Dieser Key wird gebraucht, weil der n8n-Node "Fetch Fireflies Transcript" nach E
 4. Als Action **"Webhooks by Zapier" → POST** wählen und die in n8n kopierte Granola-Webhook-URL (Node "Granola Webhook", Pfad `/meeting-granola`) eintragen.
 5. Im Zapier-Webhook-Body die Felder so benennen/mappen, dass sie zu dem passen, was der n8n-Node "Normalize Granola" erwartet: `title`, `attendees` (Liste), `transcript` bzw. `notes`, `id`.
 
-> - Hier bitte Screenshot vom Zapier-Zap-Editor (Trigger + Webhook-Action + Feld-Mapping) einfügen
-
 **Option B – inoffizielles Community-Tool ("granola-webhook" auf GitHub):**
 Ein Drittanbieter-Tool, das lokal auf einem Rechner mit installiertem Granola läuft, die lokale Cache-Datei überwacht und bei neuen Notizen selbst einen Webhook an n8n schickt. Nicht offiziell von Granola unterstützt – vor Einsatz mit der Agentur-IT/Datenschutz abklären, da es lokal auf einem Mitarbeiter-Rechner laufen muss.
 
 Egal welche Option gewählt wird: Nach dem ersten echten Testaufruf unbedingt im n8n-Node **"Normalize Granola"** prüfen, ob die Feldnamen im eingehenden Payload (`body.title`, `body.attendees`, `body.transcript`/`body.notes`, `body.id`) tatsächlich so heißen – sonst die Set-Node-Expressions entsprechend anpassen.
 
-> - Hier bitte Screenshot vom n8n-Node "Normalize Granola" mit den Feld-Zuordnungen einfügen
+![n8n – Node "Normalize Granola" mit Feld-Zuordnungen aus dem Granola-Webhook-Payload](img/image-14.png)
 
 ---
 

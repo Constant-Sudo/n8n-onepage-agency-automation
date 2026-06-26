@@ -17,7 +17,7 @@ Der Node **"Claude Opus (Build)"** nutzt das leistungsfähigste Claude-Modell, d
 1. Falls bereits für "Sub: extract_and_store" oder "Sub: Webscraper" eine Anthropic-Credential existiert, **diese wiederverwenden**.
 2. Andernfalls auf [console.anthropic.com](https://console.anthropic.com) → **Settings → API Keys → Create Key**.
 
-> - Hier bitte Screenshot vom n8n-Credential-Dialog "Anthropic" (zugeordnet zu "Claude Opus (Build)") einfügen
+![n8n – Credential-Dialog Anthropic API, zugeordnet zum Node "Claude Opus (Build)"](img/image-15.png)
 
 **Hinweis zu Kosten:** Opus-Modelle sind deutlich teurer als Sonnet/Haiku und das Anthropic-Konto braucht ausreichendes Guthaben/Billing-Setup, da ein kompletter Website-Bau viele Tool-Aufrufe mit großem Kontext erzeugt.
 
@@ -27,8 +27,6 @@ Der Node **"Claude Opus (Build)"** nutzt das leistungsfähigste Claude-Modell, d
 
 1. Sicherstellen, dass der genutzte Onepage-Account eine **aktive Onepage-AI-Mitgliedschaft** hat.
 2. Falls der MCP-Beta-Zugang noch nicht aktiviert ist: eine E-Mail an **support@onepage.io** mit der Bitte um Freischaltung des MCP-Beta-Zugangs senden.
-
-> - Hier bitte Screenshot von der Onepage-Account-Übersicht / Mitgliedschaftsstatus einfügen
 
 **Wichtig:** Von der KI erstellte/bearbeitete Inhalte sind aktuell nur unter **beta.onepage.io** sichtbar und editierbar – nicht im normalen **app.onepage.io**. Das ist kein Konfigurationsfehler, sondern der aktuelle Stand der Beta.
 
@@ -42,7 +40,7 @@ Im importierten Workflow steht im Node **"OnePage MCP"** beim Feld **Endpoint-UR
 2. Als Endpoint-URL `https://mcp.onepage.io/` eintragen (offiziell für Claude Desktop dokumentierte Adresse).
 3. Falls das nicht funktioniert: alternativ `https://mcp.onepage.io/mcp` testen (Variante aus dem Platzhaltertext des Nodes selbst).
 
-> - Hier bitte Screenshot vom geöffneten "OnePage MCP"-Node mit der Endpoint-URL einfügen
+![n8n – OnePage MCP Node mit eingetragener Endpoint-URL](img/image-19.png)
 
 **Hinweis:** Onepage dokumentiert den MCP-Zugang offiziell nur für Claude Desktop, Cursor und Codex – nicht explizit für n8n oder andere generische MCP-Clients. Falls die Verbindung nicht zustande kommt, beim Onepage-Support (support@onepage.io) gezielt nach dem korrekten Endpoint und OAuth2-Setup für Drittanbieter-/Automatisierungstools fragen.
 
@@ -55,9 +53,7 @@ Im importierten Workflow steht im Node **"OnePage MCP"** beim Feld **Endpoint-UR
 3. Authorization-/Token-URL sowie Client-ID/Secret werden von Onepage im Rahmen der Beta-Freischaltung bereitgestellt – falls diese Werte nicht selbst im Onepage-Account auffindbar sind, beim Support nachfragen.
 4. Nach Eingabe der Werte auf **"Connect"/"Sign in"** klicken – das führt zum Onepage-Login + Berechtigungs-Bestätigung.
 
-> - Hier bitte Screenshot vom n8n-OAuth2-Credential-Dialog für den "OnePage MCP"-Node einfügen
-
-> - Hier bitte Screenshot vom Onepage-Login-/Consent-Bildschirm nach Klick auf "Connect" einfügen
+![n8n – OAuth2-Credential-Dialog für den OnePage MCP Node](img/image-20.png)
 
 ---
 

@@ -15,14 +15,11 @@ Der Workflow nutzt zwei KI-Modelle: **Claude Sonnet 4.6** (Node "Claude Sonnet (
 1. Auf [console.anthropic.com](https://console.anthropic.com) einloggen (ggf. Account für die Agentur anlegen).
 2. Links **Settings → API Keys → Create Key**.
 3. Key benennen (z. B. "n8n-Agency-Automation") und kopieren – wird nur einmal angezeigt.
-
-> - Hier bitte Screenshot von console.anthropic.com → Settings → API Keys einfügen
-
 4. In n8n: **Credentials → New Credential → "Anthropic"**.
 5. API-Key einfügen, speichern (z. B. als "Anthropic API – Agentur").
 6. Diese Credential in **beiden** Nodes "Claude Sonnet (Extract)" und "Claude Haiku (Resolve)" auswählen.
 
-> - Hier bitte Screenshot vom n8n-Credential-Dialog "Anthropic" einfügen
+![n8n – Credential-Dialog Anthropic API mit eingetragenem API-Key](img/image-15.png)
 
 **Hinweis:** Dieselbe Anthropic-Credential wird auch in den Workflows "Sub: Webscraper" und "Builder: Website aus Briefing" benötigt – einmal anlegen, überall wiederverwenden.
 
@@ -38,7 +35,7 @@ Der Workflow schreibt in zwei n8n **Data Tables**. Data Tables sind instanzspezi
    - **briefing_items**: `item_id`, `project_id`, `source`, `source_ref`, `raw_content`, `extracted_json`
 3. Falls neu angelegt: in den Nodes **"Upsert Project"** und **"Insert Briefing Item"** das Feld "Data Table" öffnen und die neu erstellte Tabelle auswählen (alte ID zeigt sonst ins Leere).
 
-> - Hier bitte Screenshot der n8n Data-Table-Übersicht einfügen
+![n8n – Data Tables Übersicht mit den Tabellen "projects" und "briefing_items"](img/image-16.png)
 
 ---
 
