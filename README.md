@@ -1,5 +1,7 @@
 # Onepage Multi-Source Agency Automation
 
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-blue.svg)](LICENSE)
+
 n8n-Workflows, die Kunden-Briefings aus mehreren Kanälen automatisch sammeln und
 auf Knopfdruck über **OnePage MCP** in eine fertige Website verwandeln.
 
@@ -107,4 +109,4 @@ Mockdaten zum Testen liegen unter [`schemas/`](schemas/)
 
 ## Lizenz & Kontakt
 
-[MIT](LICENSE) · cartellieri@adcon-tech.de
+[Non-Commercial](LICENSE) · cartellieri@adcon-tech.de
